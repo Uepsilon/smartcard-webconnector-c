@@ -4,6 +4,7 @@
 #include <nfc/nfc.h>
 #include <unistd.h>
 #include <string.h>
+#include <curl/curl.h>
 
 static int keepRunning = 1;
 
@@ -24,6 +25,42 @@ static void print_hex(const uint8_t *pbtData, const size_t szBytes)
         printf("%02x    ", pbtData[szPos]);
     }
     printf("\n");
+}
+
+int postData(char *uid)
+{
+    CURL *curl;
+    CURLcode res;
+    char params[255];
+
+    /* In windows, this will init the winsock stuff */
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    /* get a curl handle */
+    curl = curl_easy_init();
+    if(curl) {
+        /* First set the URL that is about to receive our POST. This URL can
+        just as well be a https:// URL if that is what should receive the
+        data. */
+        curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:3000/checkin");
+        /* Now specify the POST data */
+        strcpy(params, "event_key=123&resoure=wurst&card_uid=");
+        strcat(params, uid);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params);
+
+        /* Perform the request, res will get the return code */
+        res = curl_easy_perform(curl);
+        /* Check for errors */
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                curl_easy_strerror(res));
+
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+    }
+
+    curl_global_cleanup();
+return 0;
 }
 
 int main(int argc, const char *argv[])
@@ -94,6 +131,8 @@ int main(int argc, const char *argv[])
                 /* New Card! */
                 printf("UID: %s\n", currUID);
                 strncpy(lastUID, currUID, sizeof(currUID));
+
+                (void) postData(currUID);
             }
         }
     }

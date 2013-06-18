@@ -2,7 +2,7 @@
 CC = gcc
 
 # define compiler flags
-CFLAGS = -lnfc
+CFLAGS = -l nfc -l curl
 
 # define the script name
 TARGET = webconnector
