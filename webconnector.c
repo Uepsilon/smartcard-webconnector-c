@@ -42,9 +42,9 @@ int postData(char *uid)
         /* First set the URL that is about to receive our POST. This URL can
         just as well be a https:// URL if that is what should receive the
         data. */
-        curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:3000/checkin");
+        curl_easy_setopt(curl, CURLOPT_URL, "http://yak-service.herokuapp.com/checkin");
         /* Now specify the POST data */
-        strcpy(params, "event_key=123&resoure=wurst&card_uid=");
+        strcpy(params, "event_key=toM6M3xdbzI9n4WB67yZtdfuH6rM8Hbo9fTKwzwi&resoure=wurst&card_uid=");
         strcat(params, uid);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params);
 
